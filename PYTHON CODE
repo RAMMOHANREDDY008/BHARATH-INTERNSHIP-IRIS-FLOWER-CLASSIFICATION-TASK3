@@ -1,0 +1,42 @@
+# Import necessary libraries
+import numpy as np
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, classification_report
+from sklearn.datasets import load_iris
+# Load the Iris dataset
+data = load_iris()
+X = data.data
+y = data.target
+iris_df = pd.DataFrame(data=np.c_[data['data'], data['target']], columns=data['feature_names'] + ['target'])
+     # Preprocess the data
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Feature scaling
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+ # Build a machine learning model (Random Forest Classifier)
+model = RandomForestClassifier(n_estimators=100, random_state=42)
+# Train the model
+model.fit(X_train, y_train)
+# Make predictions
+y_pred = model.predict(X_test)    
+# Evaluate the model's performance
+accuracy = accuracy_score(y_test, y_pred)*100
+print(f'Accuracy: {accuracy:.2f}')
+report = classification_report(y_test, y_pred, target_names=data.target_names)
+print("Classification Report:\n", report)
+# Collect user input for sepal and petal measurements
+sepal_length = float(input("Enter sepal length (cm): "))
+sepal_width = float(input("Enter sepal width (cm): "))
+petal_length = float(input("Enter petal length (cm): "))
+petal_width = float(input("Enter petal width (cm): "))
+# Preprocess the user input data
+user_input = scaler.transform([[sepal_length, sepal_width, petal_length, petal_width]])
+# Make a prediction
+predicted_class = model.predict(user_input)
+predicted_species = data.target_names[predicted_class]
+# Display the predicted species to the user
+print(f"Predicted Iris species: {predicted_species}")
